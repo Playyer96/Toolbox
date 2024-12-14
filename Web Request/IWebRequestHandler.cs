@@ -1,9 +1,7 @@
-﻿using System.Net;
-using System.Threading.Tasks;
-using Cysharp.Threading.Tasks;
+﻿using Cysharp.Threading.Tasks;
 using UnityEngine;
 
-namespace PokeApi.WebRequest
+namespace Toolbox.WebRequest
 {
     public interface IWebRequestHandler
     {

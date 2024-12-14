@@ -4,7 +4,7 @@ using Cysharp.Threading.Tasks;
 using Newtonsoft.Json;
 using UnityEngine;
 
-namespace PokeApi.WebRequest
+namespace Toolbox.WebRequest
 {
     public class HttpClientHandler : IWebRequestHandler
     {

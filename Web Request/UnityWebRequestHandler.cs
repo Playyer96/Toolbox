@@ -5,7 +5,7 @@ using Cysharp.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Networking;
 
-namespace PokeApi.WebRequest
+namespace Toolbox.WebRequest
 {
     public class UnityWebRequestHandler : IWebRequestHandler
     {

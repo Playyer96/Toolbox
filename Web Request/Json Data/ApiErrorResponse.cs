@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace PokeApi.WebRequest.JsonData
+namespace Toolbox.WebRequest.JsonData
 {
     [Serializable]
     public class ApiErrorResponse
