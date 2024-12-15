@@ -1,14 +1,20 @@
 using System.IO;
+using Cysharp.Threading.Tasks;
 using UnityEditor;
 using UnityEngine;
-using System.Net;
+using Toolbox.Utils;
+using Toolbox.WebRequest;
 
 [InitializeOnLoad]
 public static class DOTweenInstaller
 {
     private const string DOTweenPluginPath = "Assets/Plugins/DOTween";
-    private const string DOTweenZipUrl = "https://dotween.demigiant.com/downloads/DOTween_1_2_765.zip"; // Replace with the actual URL to the DOTween zip file
-    // private const string DOTweenZipLocalPath = "Assets/Plugins/DOTween.zip"; // You can use a local path to store DOTween.zip if it's bundled with your project
+
+    private const string
+        DOTweenZipUrl = "https://dotween.demigiant.com/downloads/DOTween_1_2_765.zip";
+
+    private const string
+        DOTweenZipLocalPath = "Packages/com.dani.toolbox/Plugins/DOTween 1.2.765.zip";
 
     static DOTweenInstaller()
     {
@@ -30,56 +36,50 @@ public static class DOTweenInstaller
         }
         else
         {
-            Debug.Log("DOTween is already installed.");
+            Debug.Log("DOTween is already installed");
         }
     }
 
     private static void InstallDOTweenPlugin()
     {
-        // if (File.Exists(DOTweenZipLocalPath))
-        // {
-        //     Debug.Log("DOTween.zip found locally. Extracting...");
-        //     ExtractDOTween(DOTweenZipLocalPath);
-        // }
-        // else
-        // {
+        if (File.Exists(DOTweenZipLocalPath))
+        {
+            Debug.Log("DOTween.zip found locally. Extracting...");
+            FileUtils.ExtractZip(DOTweenZipLocalPath, Path.Combine(Application.dataPath, "Plugins"));
+        }
+        else
+        {
             Debug.Log("DOTween.zip not found locally. Downloading...");
-            DownloadDOTweenZip();
-        // }
-    }
-
-    private static void DownloadDOTweenZip()
-    {
-        using (var webClient = new WebClient())
-        {
-            try
-            {
-                string tempPath = Path.Combine(Application.temporaryCachePath, "DOTween.zip");
-                webClient.DownloadFile(DOTweenZipUrl, tempPath);
-                Debug.Log("DOTween.zip downloaded successfully.");
-                ExtractDOTween(tempPath);
-            }
-            catch (System.Exception e)
-            {
-                Debug.LogError($"Error downloading DOTween.zip: {e.Message}");
-            }
+            _ = DownloadAndExtractDOTweenZipAsync(DOTweenZipUrl, DOTweenPluginPath);
         }
     }
 
-    private static void ExtractDOTween(string zipFilePath)
-    {
-        try
-        {
-            string extractPath = Path.Combine(Application.dataPath, "Plugins");
-            System.IO.Compression.ZipFile.ExtractToDirectory(zipFilePath, extractPath);
-            Debug.Log("DOTween plugin extracted successfully.");
 
-            // Refresh the Asset Database
-            AssetDatabase.Refresh();
-        }
-        catch (System.Exception e)
+    private static async UniTask DownloadAndExtractDOTweenZipAsync(string url, string path)
+    {
+        IWebRequestHandler webRequestManager = new HttpClientHandler();
+
+        byte[] fileBytes = await FetchFile(url);
+
+        // Save the downloaded file to a temporary location (temporary cache path)
+        string tempFilePath = Path.Combine(Application.temporaryCachePath, "temp.zip");
+        await File.WriteAllBytesAsync(tempFilePath, fileBytes);
+        // await File.WriteAllBytesAsync(path, fileBytes);
+
+        // Extract the ZIP file after saving it to the local path
+        FileUtils.ExtractZip(tempFilePath, Path.Combine(Application.dataPath, "Plugins"));
+    }
+
+    private static async UniTask<byte[]> FetchFile(string url)
+    {
+        IWebRequestHandler webRequestManager = new HttpClientHandler();
+
+        var file = await webRequestManager.FetchFileAsync(url);
+        if (file == null)
         {
-            Debug.LogError($"Failed to extract DOTween plugin: {e.Message}");
+            Debug.LogError($"Failed to fetch texture from URL {url}");
         }
+
+        return file;
     }
 }

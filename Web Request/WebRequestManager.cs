@@ -1,4 +1,8 @@
-﻿using Cysharp.Threading.Tasks;
+﻿using System;
+using System.IO;
+using System.IO.Compression;
+using Cysharp.Threading.Tasks;
+using UnityEngine;
 
 namespace Toolbox.WebRequest
 {
@@ -31,5 +35,6 @@ namespace Toolbox.WebRequest
 
         public UniTask DeleteAsync<T>(string url) => _webRequestHandler.DeleteAsync<T>(url).AsUniTask();
         public UniTask FetchTextureAsync(string url) => _webRequestHandler.FetchTextureAsync(url).AsUniTask();
+        public UniTask FetchFileAsync(string url) => _webRequestHandler.FetchFileAsync(url).AsUniTask();
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Net.Http;
 using System.Text;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
@@ -95,6 +96,21 @@ namespace Toolbox.WebRequest
             }
 
             return DownloadHandlerTexture.GetContent(request);
+        }
+
+        public async UniTask<byte[]> FetchFileAsync(string url)
+        {
+            using UnityWebRequest request = UnityWebRequest.Get(url);
+            ApplyGlobalHeaders(request);
+
+            await request.SendWebRequest().ToUniTask();
+
+            if (request.result != UnityWebRequest.Result.Success)
+            {
+                throw new Exception($"Error downloading file: {request.error}");
+            }
+
+            return request.downloadHandler.data;
         }
     }
 }

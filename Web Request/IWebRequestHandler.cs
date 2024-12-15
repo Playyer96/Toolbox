@@ -10,5 +10,6 @@ namespace Toolbox.WebRequest
         UniTask<TResponse> PostAsync<TRequest, TResponse>(string url, TRequest payload);
         UniTask<T> DeleteAsync<T>(string url);
         UniTask<Texture2D> FetchTextureAsync(string url);
+        UniTask<byte[]> FetchFileAsync(string url);
     }
 }

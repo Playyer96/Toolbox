@@ -13,7 +13,7 @@ namespace Toolbox.WebRequest
         public void AddDefaultRequestHeaders(string key, string value)
         {
             // Only add to DefaultRequestHeaders if key is valid (common headers)
-            if (key.ToLower() == "user-agent" || key.ToLower() == "authorization") 
+            if (key.ToLower() == "user-agent" || key.ToLower() == "authorization")
             {
                 if (!Client.DefaultRequestHeaders.Contains(key))
                 {
@@ -22,7 +22,8 @@ namespace Toolbox.WebRequest
             }
             else
             {
-                Debug.LogWarning($"Unsupported header: {key}. Only 'User-Agent' or 'Authorization' headers are allowed.");
+                Debug.LogWarning(
+                    $"Unsupported header: {key}. Only 'User-Agent' or 'Authorization' headers are allowed.");
             }
         }
 
@@ -92,6 +93,17 @@ namespace Toolbox.WebRequest
             }
 
             return null;
+        }
+
+        public async UniTask<byte[]> FetchFileAsync(string url)
+        {
+            HttpResponseMessage response = await Client.GetAsync(url).AsUniTask();
+            if (!response.IsSuccessStatusCode)
+            {
+                throw new HttpRequestException($"Error downloading file: {response.StatusCode}");
+            }
+
+            return await response.Content.ReadAsByteArrayAsync().AsUniTask();
         }
     }
 }
