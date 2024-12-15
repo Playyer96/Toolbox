@@ -1,9 +1,7 @@
-﻿using System.Net;
-using System.Threading.Tasks;
-using Cysharp.Threading.Tasks;
+﻿using Cysharp.Threading.Tasks;
 using UnityEngine;
 
-namespace PokeApi.WebRequest
+namespace Toolbox.WebRequest
 {
     public interface IWebRequestHandler
     {
@@ -12,5 +10,6 @@ namespace PokeApi.WebRequest
         UniTask<TResponse> PostAsync<TRequest, TResponse>(string url, TRequest payload);
         UniTask<T> DeleteAsync<T>(string url);
         UniTask<Texture2D> FetchTextureAsync(string url);
+        UniTask<byte[]> FetchFileAsync(string url);
     }
 }
