@@ -31,19 +31,6 @@
 5. **Wait for Installation**
     - Unity will download and install the package. Once completed, the package will appear in the **In Project** section of the Package Manager.
 
-## Notes
-
-- **Unity Version Compatibility**:
-    - This package is compatible with Unity version `[insert version or range here]`. Ensure your Unity project is using a compatible version.
-
-- **Accessing Private Repositories**:
-    - If this repository is private, you need to authenticate:
-        - Use a personal access token (PAT) in the URL:
-          ```plaintext
-          https://<username>:<token>@github.com/username/repository.git
-          ```
-
-
 ### Dependencies
 - The Unity Package Manager will automatically resolve and download any dependencies required by this package.
 
