@@ -3,55 +3,69 @@ using System.Collections.Generic;
 
 namespace Toolbox.EventManager
 {
-    public class EventManager : IEventManager
+    public class EventManager
     {
         private static EventManager _instance;
-        public static EventManager Instance => _instance ??= new EventManager();
 
-        private readonly Dictionary<Type, object> _eventHandlers = new();
-
-        // Register an observer for a specific event type
-        public void Register<T>(Action<T> observer) where T : class
+        public static EventManager Instance
         {
-            if (!_eventHandlers.TryGetValue(typeof(T), out var handlers))
+            get
             {
-                handlers = new List<Action<T>>();
-                _eventHandlers[typeof(T)] = handlers;
-            }
+                if (_instance == null)
+                {
+                    _instance = new EventManager();
+                }
 
-            var typedHandlers = (List<Action<T>>)handlers;
-            if (!typedHandlers.Contains(observer))
-            {
-                typedHandlers.Add(observer);
+                return _instance;
             }
         }
 
-        // Unregister an observer for a specific event type
-        public void Unregister<T>(Action<T> observer) where T : class
-        {
-            if (_eventHandlers.TryGetValue(typeof(T), out var handlers))
-            {
-                var typedHandlers = (List<Action<T>>)handlers;
-                typedHandlers.Remove(observer);
+        private readonly Dictionary<Type, List<object>> _eventListeners = new();
 
-                if (typedHandlers.Count == 0)
+        // Register a listener for a specific event type
+        public void Register<T>(Action<T> listener)
+        {
+            var eventType = typeof(T);
+            if (!_eventListeners.ContainsKey(eventType))
+            {
+                _eventListeners[eventType] = new List<object>();
+            }
+
+            _eventListeners[eventType].Add(listener);
+        }
+
+        // Unregister a listener for a specific event type
+        public void Unregister<T>(Action<T> listener)
+        {
+            var eventType = typeof(T);
+            if (_eventListeners.ContainsKey(eventType))
+            {
+                _eventListeners[eventType].Remove(listener);
+
+                // Clean up if no listeners remain
+                if (_eventListeners[eventType].Count == 0)
                 {
-                    _eventHandlers.Remove(typeof(T));
+                    _eventListeners.Remove(eventType);
                 }
             }
         }
 
-        // Invoke all observers for a specific event type
-        public void Invoke<T>(T eventArgs) where T : class
+        // Invoke an event and notify all listeners
+        public void Invoke<T>(T evt)
         {
-            if (_eventHandlers.TryGetValue(typeof(T), out var handlers))
+            var eventType = typeof(T);
+            if (_eventListeners.ContainsKey(eventType))
             {
-                var typedHandlers = (List<Action<T>>)handlers;
-                foreach (var handler in typedHandlers)
+                foreach (var listener in _eventListeners[eventType])
                 {
-                    handler.Invoke(eventArgs);
+                    ((Action<T>)listener)?.Invoke(evt);
                 }
             }
+        }
+
+        // Prevent direct instantiation of EventManager outside of the Singleton
+        private EventManager()
+        {
         }
     }
 }
